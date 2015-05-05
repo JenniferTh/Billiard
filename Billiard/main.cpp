@@ -14,18 +14,24 @@ static double window_height_ = 768;
 double w1RSpeed = 4;
 static double alpha_1 = 0;
 static double alpha_2 = 0;
-//Translation W¸rfel
-double w1TX = 0;
-double w1TY = 0;
-double w1TZ = 0;
 double length = 2;
-//Skalierung
-double w1SX = 1;
-double w1SY = 1;
-double w1SZ = 1;
 //Kugel1
 Vec3 kugel1(0,.5,10);
-double winkelKugel = 0;
+double radius = .5;
+double speedX = .5;
+
+bool kollisionX(){
+	bool kol = false;
+	if((kugel1.p[0]+speedX+radius)>=7){
+		kol = true;
+		kugel1.p[0] += 7-kugel1.p[0];
+	}else if((kugel1.p[0]+speedX-radius)<=-7){
+		kol = true;
+		kugel1.p[0] += -7-kugel1.p[0];
+	}
+	return kol;
+}
+
 
 void DrawSphere(const Vec3& ctr, double r){
   int     i, j,
@@ -140,25 +146,17 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     if (key == GLFW_KEY_S) alpha_1 += w1RSpeed;	//Links drehen
     if (key == GLFW_KEY_D) alpha_2 += w1RSpeed;	//Rechts drehen
 
-    //Translation
-    if ((key == GLFW_KEY_UP && action == GLFW_PRESS)||(key == GLFW_KEY_UP && action == GLFW_REPEAT)) 	w1TY += .1;		//Hoch
-    if ((key == GLFW_KEY_DOWN && action == GLFW_PRESS)||(key == GLFW_KEY_DOWN && action == GLFW_REPEAT)) 	w1TY -= .1;		//Runter
-    if ((key == GLFW_KEY_LEFT && action == GLFW_PRESS)||(key == GLFW_KEY_LEFT && action == GLFW_REPEAT)) 	w1TX -= .1;		//Links
-    if ((key == GLFW_KEY_RIGHT && action == GLFW_PRESS)||(key == GLFW_KEY_RIGHT && action == GLFW_REPEAT)) w1TX += .1;		//Rechts
+    //Kugel
 
-    if ((key == GLFW_KEY_R && action == GLFW_PRESS)||(key == GLFW_KEY_R && action == GLFW_REPEAT)) w1TZ -= 0.1;		//Weg
-    if ((key == GLFW_KEY_F && action == GLFW_PRESS)||(key == GLFW_KEY_F && action == GLFW_REPEAT)) w1TZ += 0.1;		//Nah
-
-    //Skalierung
-    if (key == GLFW_KEY_Z) {if(w1SX>=1.1)w1SX -= 0.1;}
-	if (key == GLFW_KEY_Z) {if(w1SY>=1.1)w1SY -= 0.1;}
-	if (key == GLFW_KEY_Z) {if(w1SZ>=1.1)w1SZ -= 0.1;}	//klein
-
-	if (key == GLFW_KEY_H) {w1SX += 0.1;}
-	if (key == GLFW_KEY_H) {w1SY += 0.1;}
-	if (key == GLFW_KEY_H) {w1SZ += 0.1;}	//Groﬂ
-
-	if (key == GLFW_KEY_M) {winkelKugel +=5;}
+    if (key == GLFW_KEY_SPACE){
+    	if(kollisionX()){
+    		speedX = speedX*-1;
+    	}
+    	if(kollisionZ()){
+    		//ZPosition
+    	}
+    	kugel1.p[0] += speedX;
+    }
 }
 void drawSquare( Vec3 seite1, Vec3 seite2, Vec3 seite3, Vec3 seite4){
 	glBegin(GL_QUADS);
@@ -173,14 +171,10 @@ void Preview() {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glPushMatrix();
-		glTranslated(0, 0, -10.0);
+		glTranslated(0,0,-10);
 		//Rotation
 		glRotated(alpha_1, 1, 0, 0);
 		glRotated(alpha_2, 0, 1, 0);
-		//Translation
-		glTranslated(w1TX, w1TY, w1TZ);
-		//Skalierung
-		glScaled(w1SX, w1SY, w1SZ);
 		glPushMatrix();
 			//Boden
 			SetMaterialColor(2, 0, 1, 0);
@@ -202,7 +196,7 @@ void Preview() {
 			glPushMatrix();
 				//Kugel
 				glTranslated(0, 0, -10);
-				DrawSphere(kugel1, .5);
+				DrawSphere(kugel1, radius);
 			glPopMatrix();
 		glPopMatrix();
 	glPopMatrix();
@@ -248,7 +242,7 @@ int main() {
 
 	  glfwTerminate();
 
-	  //printf("Goodbye!\n");
+	  printf("Goodbye!\n");
 
 	  return 0;
 }
