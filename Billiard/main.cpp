@@ -23,7 +23,48 @@ double length = 2;
 double w1SX = 1;
 double w1SY = 1;
 double w1SZ = 1;
+//Kugel1
+Vec3 kugel1(0,.5,10);
+double winkelKugel = 0;
 
+void DrawSphere(const Vec3& ctr, double r){
+  int     i, j,
+          n1 = 6, n2 = 12;
+  Vec3    normal, v1;
+  double  a1, a1d = M_PI / n1,
+          a2, a2d = M_PI / n2,
+          s1, s2,
+          c1, c2;
+
+  glShadeModel(GL_SMOOTH);
+  for(i = 0; i < n1; i++){
+    a1 = i * a1d;
+
+    glBegin(GL_TRIANGLE_STRIP);
+    for(j = 0; j <= n2; j++){
+      a2 = (j + .5 * (i % 2)) * 2 * a2d;
+
+      s1 = sin(a1);
+      c1 = cos(a1);
+      s2 = sin(a2);
+      c2 = cos(a2);
+      normal = c1 * XVec3 + s1 * (c2 * YVec3 + s2 * ZVec3);
+      v1 = ctr + r * normal;
+      glNormal3dv(normal.p);
+      glVertex3dv(v1.p);
+
+      s1 = sin(a1 + a1d);
+      c1 = cos(a1 + a1d);
+      s2 = sin(a2 + a2d);
+      c2 = cos(a2 + a2d);
+      normal = c1 * XVec3 + s1 * (c2 * YVec3 + s2 * ZVec3);
+      v1 = ctr + r * normal;
+      glNormal3dv(normal.p);
+      glVertex3dv(v1.p);
+    }
+    glEnd();
+  }
+}
 void InitLighting() {
   GLfloat lp1[4]  = { 10,  5,  10,  0};
   GLfloat lp2[4]  = { -5,  5, -10,  0};
@@ -116,6 +157,8 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	if (key == GLFW_KEY_H) {w1SX += 0.1;}
 	if (key == GLFW_KEY_H) {w1SY += 0.1;}
 	if (key == GLFW_KEY_H) {w1SZ += 0.1;}	//Groß
+
+	if (key == GLFW_KEY_M) {winkelKugel +=5;}
 }
 void drawSquare( Vec3 seite1, Vec3 seite2, Vec3 seite3, Vec3 seite4){
 	glBegin(GL_QUADS);
@@ -156,6 +199,11 @@ void Preview() {
 			SetMaterialColor(2, 0, 0, 1);
 			SetMaterialColor(1, 1, 1, 1);
 			drawSquare(Vec3(-7,1,5), Vec3(7,1,5), Vec3(7,0,5), Vec3(-7,0,5));
+			glPushMatrix();
+				//Kugel
+				glTranslated(0, 0, -10);
+				DrawSphere(kugel1, .5);
+			glPopMatrix();
 		glPopMatrix();
 	glPopMatrix();
 }
