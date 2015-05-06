@@ -7,6 +7,7 @@
 #include <iostream>
 #include "vec3.hpp"
 #include <iostream>
+#include <time.h>
 using namespace std;
 static double window_width_ = 1024;
 static double window_height_ = 768;
@@ -17,21 +18,48 @@ static double alpha_2 = 0;
 double length = 2;
 //Kugel1
 Vec3 kugel1(0,.5,10);
+Vec3 richtungsvektor;
+int speed = 10;
 double radius = .5;
 double speedX = .5;
+double speedZ = .5;
 
-bool kollisionX(){
+void sleep(unsigned int mseconds)
+{
+    clock_t goal = mseconds + clock();
+    while (goal > clock());
+}
+bool kollision(){
 	bool kol = false;
 	if((kugel1.p[0]+speedX+radius)>=7){
 		kol = true;
-		kugel1.p[0] += 7-kugel1.p[0];
+		berechneRichtungsvektor(7);
 	}else if((kugel1.p[0]+speedX-radius)<=-7){
 		kol = true;
-		kugel1.p[0] += -7-kugel1.p[0];
+		berechneRichtungsvektor(-7);
+	}else if((kugel1.p[2]+speedZ-radius)<=-5){
+		kol = true;
+		berechneRichtungsvektor(-5);
+	}else if((kugel1.p[2]+speedZ+radius)>=5){
+		kol = true;
+		berechneRichtungsvektor(5);
 	}
+	sleep(speed);
 	return kol;
 }
-
+void berechneRichtungsvektor(int side){
+	switch(side){
+	case 7:
+		Vec3 side(0,0,-10);
+		break;
+	case -7:
+		break;
+	case 5:
+		break;
+	case -5:
+		break;
+	}
+}
 
 void DrawSphere(const Vec3& ctr, double r){
   int     i, j,
@@ -145,18 +173,6 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     if (key == GLFW_KEY_A) alpha_2 -= w1RSpeed;	//Vorne drehen
     if (key == GLFW_KEY_S) alpha_1 += w1RSpeed;	//Links drehen
     if (key == GLFW_KEY_D) alpha_2 += w1RSpeed;	//Rechts drehen
-
-    //Kugel
-
-    if (key == GLFW_KEY_SPACE){
-    	if(kollisionX()){
-    		speedX = speedX*-1;
-    	}
-    	if(kollisionZ()){
-    		//ZPosition
-    	}
-    	kugel1.p[0] += speedX;
-    }
 }
 void drawSquare( Vec3 seite1, Vec3 seite2, Vec3 seite3, Vec3 seite4){
 	glBegin(GL_QUADS);
