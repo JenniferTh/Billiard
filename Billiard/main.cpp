@@ -11,55 +11,19 @@
 using namespace std;
 static double window_width_ = 1024;
 static double window_height_ = 768;
-//Rotation
+static double xpos;
+static double ypos = -10; //Maus Position//Rotation
 double w1RSpeed = 4;
-static double alpha_1 = 0;
+static double alpha_1 = 90;
 static double alpha_2 = 0;
 double length = 2;
 //Kugel1
-Vec3 kugel1(0,.5,10);
-Vec3 richtungsvektor;
-int speed = 10;
-double radius = .5;
-double speedX = .5;
-double speedZ = .5;
+double radius = .35;
+Vec3 kugel1(0,radius,10);
+Vec3 speedKugel (0.01, 0, 0.01);
 
-void sleep(unsigned int mseconds)
-{
-    clock_t goal = mseconds + clock();
-    while (goal > clock());
-}
-bool kollision(){
-	bool kol = false;
-	if((kugel1.p[0]+speedX+radius)>=7){
-		kol = true;
-		berechneRichtungsvektor(7);
-	}else if((kugel1.p[0]+speedX-radius)<=-7){
-		kol = true;
-		berechneRichtungsvektor(-7);
-	}else if((kugel1.p[2]+speedZ-radius)<=-5){
-		kol = true;
-		berechneRichtungsvektor(-5);
-	}else if((kugel1.p[2]+speedZ+radius)>=5){
-		kol = true;
-		berechneRichtungsvektor(5);
-	}
-	sleep(speed);
-	return kol;
-}
-void berechneRichtungsvektor(int side){
-	switch(side){
-	case 7:
-		Vec3 side(0,0,-10);
-		break;
-	case -7:
-		break;
-	case 5:
-		break;
-	case -5:
-		break;
-	}
-}
+
+
 
 void DrawSphere(const Vec3& ctr, double r){
   int     i, j,
@@ -174,6 +138,13 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     if (key == GLFW_KEY_S) alpha_1 += w1RSpeed;	//Links drehen
     if (key == GLFW_KEY_D) alpha_2 += w1RSpeed;	//Rechts drehen
 }
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods){
+	int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+	if (state == GLFW_PRESS){
+		speedKugel.p[0] = (kugel1.p[0]-(xpos*30/window_width_));
+		speedKugel.p[2] = (kugel1.p[2]-(-ypos*20/window_height_))+10;
+	}
+}
 void drawSquare( Vec3 seite1, Vec3 seite2, Vec3 seite3, Vec3 seite4){
 	glBegin(GL_QUADS);
 	//glNormal3d( 0, 0, 1);
@@ -182,6 +153,22 @@ void drawSquare( Vec3 seite1, Vec3 seite2, Vec3 seite3, Vec3 seite4){
 	glVertex3dv( seite3.p);
 	glVertex3dv( seite4.p);
 	glEnd();
+}
+void kollision(){
+	if((kugel1.p[0]+radius)>=7){
+		speedKugel.p[0] *= -1;
+	}else if((kugel1.p[0]-radius)<=-7){
+		speedKugel.p[0] *= -1;
+	}else if((kugel1.p[2]-radius)<=5){
+		speedKugel.p[2] *= -1;
+	}else if((kugel1.p[2]+radius)>=15){
+		speedKugel.p[2] *= -1;
+	}
+}
+void moveKugel(){
+	kollision();
+	kugel1.p[0] += speedKugel.p[0];
+	kugel1.p[2] += speedKugel.p[2];
 }
 void Preview() {
 	glMatrixMode(GL_MODELVIEW);
@@ -193,29 +180,73 @@ void Preview() {
 		glRotated(alpha_2, 0, 1, 0);
 		glPushMatrix();
 			//Boden
-			SetMaterialColor(2, 0, 1, 0);
-			SetMaterialColor(1, 0, 0, 0);
+			SetMaterialColor(2, 0, .6, 0);
+			SetMaterialColor(1, 1, 1, 1);
 			drawSquare(Vec3(-7,0,-5), Vec3(7,0,-5), Vec3(7,0,5), Vec3(-7,0,5));
-			//Seiten
-			SetMaterialColor(2, 1, 1, 1);
+			//Seiten .innen
+			SetMaterialColor(2, .6, .4, 0);
 			SetMaterialColor(1, 0, 0, 1);
 			drawSquare(Vec3(-7,1,-5), Vec3(7,1,-5), Vec3(7,0,-5), Vec3(-7,0,-5));
 			SetMaterialColor(2, 0, 0, 1);
-			SetMaterialColor(1, 1, 1, 1);
+			SetMaterialColor(1, .6, .4, 0);
 			drawSquare(Vec3(-7,1,-5), Vec3(-7,1,5), Vec3(-7,0,5), Vec3(-7,0,-5));
 			SetMaterialColor(1, 0, 0, 1);
-			SetMaterialColor(2, 1, 1, 1);
+			SetMaterialColor(2, .6, .4, 0);
 			drawSquare(Vec3(7,1,-5), Vec3(7,1,5), Vec3(7,0,5), Vec3(7,0,-5));
 			SetMaterialColor(2, 0, 0, 1);
-			SetMaterialColor(1, 1, 1, 1);
+			SetMaterialColor(1, .6, .4, 0);
 			drawSquare(Vec3(-7,1,5), Vec3(7,1,5), Vec3(7,0,5), Vec3(-7,0,5));
+			//Seiten .aussen
+			SetMaterialColor(2, 1, 1, 1);
+			SetMaterialColor(1, .6, .4, 0);
+			drawSquare(Vec3(-7.5,1,-5.5), Vec3(7.5,1,-5.5), Vec3(7.5,0,-5.5), Vec3(-7.5,0,-5.5));
+			SetMaterialColor(2, .6, .4, 0);
+			SetMaterialColor(1, 1, 1, 1);
+			drawSquare(Vec3(-7.5,1,-5.5), Vec3(-7.5,1,5.5), Vec3(-7.5,0,5.5), Vec3(-7.5,0,-5.5));
+			SetMaterialColor(1, .6, .4, 0);
+			SetMaterialColor(2, 1, 1, 1);
+			drawSquare(Vec3(7.5,1,-5.5), Vec3(7.5,1,5.5), Vec3(7.5,0,5.5), Vec3(7.5,0,-5.5));
+			SetMaterialColor(2, .6, .4, 0);
+			SetMaterialColor(1, 1, 1, 1);
+			drawSquare(Vec3(-7.5,1,5.5), Vec3(7.5,1,5.5), Vec3(7.5,0,5.5), Vec3(-7.5,0,5.5));
+			//Seiten .verkleidung
+			SetMaterialColor(2, 1, 1, 1);
+			SetMaterialColor(1, .6, .4, 0);
+			drawSquare(Vec3(-7.5,0,-5.5), Vec3(-7.5,0,-5), Vec3(7.5,0,-5), Vec3(7.5,0,-5.5));
+			SetMaterialColor(2, 1, 1, 1);
+			SetMaterialColor(1, .6, .4, 0);
+			drawSquare(Vec3(-7.5,1,-5.5), Vec3(-7.5,1,-5), Vec3(7.5,1,-5), Vec3(7.5,1,-5.5));
+
+			SetMaterialColor(1, 1, 1, 1);
+			SetMaterialColor(2, .6, .4, 0);
+			drawSquare(Vec3(-7.5,0,5.5), Vec3(-7.5,0,5), Vec3(7.5,0,5), Vec3(7.5,0,5.5));
+			SetMaterialColor(1, 1, 1, 1);
+			SetMaterialColor(2, .6, .4, 0);
+			drawSquare(Vec3(-7.5,1,5.5), Vec3(-7.5,1,5), Vec3(7.5,1,5), Vec3(7.5,1,5.5));
+
+			SetMaterialColor(1, 1, 1, 1);
+			SetMaterialColor(2, .6, .4, 0);
+			drawSquare(Vec3(7.5,0,5), Vec3(7,0,5), Vec3(7,0,-5), Vec3(7.5,0,-5));
+			SetMaterialColor(1, 1, 1, 1);
+			SetMaterialColor(2, .6, .4, 0);
+			drawSquare(Vec3(7.5,1,5), Vec3(7,1,5), Vec3(7,1,-5), Vec3(7.5,1,-5));
+
+			SetMaterialColor(2, 1, 1, 1);
+			SetMaterialColor(1, .6, .4, 0);
+			drawSquare(Vec3(-7.5,0,5), Vec3(-7,0,5), Vec3(-7,0,-5), Vec3(-7.5,0,-5));
+			SetMaterialColor(2, 1, 1, 1);
+			SetMaterialColor(1, .6, .4, 0);
+			drawSquare(Vec3(-7.5,1,5), Vec3(-7,1,5), Vec3(-7,1,-5), Vec3(-7.5,1,-5));
+
 			glPushMatrix();
 				//Kugel
 				glTranslated(0, 0, -10);
+				SetMaterialColor(3, .99, 1, 1);
 				DrawSphere(kugel1, radius);
 			glPopMatrix();
 		glPopMatrix();
 	glPopMatrix();
+	moveKugel();
 }
 int main() {
 	  GLFWwindow* window = NULL;
@@ -248,6 +279,9 @@ int main() {
 
 	    //Listener
 	    glfwSetKeyCallback(window, key_callback);
+	    glfwGetCursorPos(window, &xpos, &ypos);
+	    glfwSetMouseButtonCallback(window, mouse_button_callback);
+	    glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, 1);
 
 	    // make it appear (before this, it's hidden in the rear buffer)
 	    glfwSwapBuffers(window);
@@ -262,4 +296,3 @@ int main() {
 
 	  return 0;
 }
-
