@@ -19,7 +19,7 @@ static double alpha_2 = 0;
 double length = 2;
 //Kugel1
 double radius = .35;
-Vec3 kugel1(0,radius,10);
+Vec3 kugel1(6,radius+1,10);
 Vec3 speedKugel (0, 0, 0);
 
 
@@ -152,8 +152,8 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		void glfwGetCursorPos(GLFWwindow *window, double *xpos, double *ypos);
 		endx = ((xpos*30/window_width_)-15);
 		endy = ((-ypos*20/window_height_)+10);
-		speedKugel.p[0] = (endx-startx)/1000;
-		speedKugel.p[2] = (starty-endy)/1000;
+		speedKugel.p[0] = (endx-startx)/10000;
+		speedKugel.p[2] = (starty-endy)/10000;
 	}
 }
 void drawSquare( Vec3 seite1, Vec3 seite2, Vec3 seite3, Vec3 seite4){
@@ -194,7 +194,13 @@ void Preview() {
 			//Boden
 			SetMaterialColor(2, 0, .6, 0);
 			SetMaterialColor(1, 1, 1, 1);
-			drawSquare(Vec3(-7,0,-5), Vec3(7,0,-5), Vec3(7,0,5), Vec3(-7,0,5));
+			drawSquare(Vec3(-7,0,-5), Vec3(-3,0,-5), Vec3(-3,0,5), Vec3(-7,0,5));
+			SetMaterialColor(2, 0, .6, 1);
+			SetMaterialColor(1, 1, 1, 1);
+			drawSquare(Vec3(-3,0,-5), Vec3(3,1,-5), Vec3(3,1,5), Vec3(-3,0,5));
+			SetMaterialColor(2, 0, .6, 0);
+			SetMaterialColor(1, 1, 1, 1);
+			drawSquare(Vec3(3,1,-5), Vec3(7,1,-5), Vec3(7,1,5), Vec3(3,1,5));
 			//Seiten .innen
 			SetMaterialColor(2, .6, .4, 0);
 			SetMaterialColor(1, 0, 0, 1);
