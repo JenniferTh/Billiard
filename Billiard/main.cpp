@@ -20,7 +20,7 @@ double length = 2;
 //Kugel1
 double radius = .35;
 Vec3 kugel1(0,radius,10);
-Vec3 speedKugel (0.01, 0, 0.01);
+Vec3 speedKugel (0, 0, 0);
 
 
 
@@ -139,10 +139,21 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     if (key == GLFW_KEY_D) alpha_2 += w1RSpeed;	//Rechts drehen
 }
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods){
-	int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
-	if (state == GLFW_PRESS){
-		speedKugel.p[0] = (kugel1.p[0]-(xpos*30/window_width_));
-		speedKugel.p[2] = (kugel1.p[2]-(-ypos*20/window_height_))+10;
+	double startx = 0;
+	double starty = 0;
+	double endx;
+	double endy;
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
+		void glfwGetCursorPos(GLFWwindow *window, double *xpos, double *ypos);
+		startx = ((xpos*30/window_width_)-15);
+		starty = ((-ypos*20/window_height_)+10);
+	}
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE){
+		void glfwGetCursorPos(GLFWwindow *window, double *xpos, double *ypos);
+		endx = ((xpos*30/window_width_)-15);
+		endy = ((-ypos*20/window_height_)+10);
+		speedKugel.p[0] = (endx-startx)/1000;
+		speedKugel.p[2] = (starty-endy)/1000;
 	}
 }
 void drawSquare( Vec3 seite1, Vec3 seite2, Vec3 seite3, Vec3 seite4){
@@ -167,8 +178,9 @@ void kollision(){
 }
 void moveKugel(){
 	kollision();
-	kugel1.p[0] += speedKugel.p[0];
-	kugel1.p[2] += speedKugel.p[2];
+	kugel1.p[0] += (speedKugel.p[0]);
+	kugel1.p[2] += (speedKugel.p[2]);
+
 }
 void Preview() {
 	glMatrixMode(GL_MODELVIEW);
@@ -241,7 +253,7 @@ void Preview() {
 			glPushMatrix();
 				//Kugel
 				glTranslated(0, 0, -10);
-				SetMaterialColor(3, .99, 1, 1);
+				SetMaterialColor(3, .99, .1, .1);
 				DrawSphere(kugel1, radius);
 			glPopMatrix();
 		glPopMatrix();
