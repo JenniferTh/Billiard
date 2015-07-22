@@ -18,8 +18,8 @@ static double alpha_1 = 90;
 static double alpha_2 = 0;
 double length = 2;
 //Kugel1
-double radius = .35;
-Vec3 kugel1(0,radius,10);
+double radiusBalls = .35;
+Vec3 kugel1(0,radiusBalls,10);
 Vec3 speedKugel (0.01, 0, 0.01);
 
 
@@ -155,13 +155,13 @@ void drawSquare( Vec3 seite1, Vec3 seite2, Vec3 seite3, Vec3 seite4){
 	glEnd();
 }
 void kollision(){
-	if((kugel1.p[0]+radius)>=7){
+	if((kugel1.p[0]+radiusBalls)>=7){
 		speedKugel.p[0] *= -1;
-	}else if((kugel1.p[0]-radius)<=-7){
+	}else if((kugel1.p[0]-radiusBalls)<=-7){
 		speedKugel.p[0] *= -1;
-	}else if((kugel1.p[2]-radius)<=5){
+	}else if((kugel1.p[2]-radiusBalls)<=5){
 		speedKugel.p[2] *= -1;
-	}else if((kugel1.p[2]+radius)>=15){
+	}else if((kugel1.p[2]+radiusBalls)>=15){
 		speedKugel.p[2] *= -1;
 	}
 }
@@ -242,7 +242,7 @@ void Preview() {
 				//Kugel
 				glTranslated(0, 0, -10);
 				SetMaterialColor(3, .99, 1, 1);
-				DrawSphere(kugel1, radius);
+				DrawSphere(kugel1, radiusBalls);
 			glPopMatrix();
 		glPopMatrix();
 	glPopMatrix();
